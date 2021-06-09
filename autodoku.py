@@ -1,6 +1,7 @@
+import pyautogui
 import pprint
 
-'''
+''' algorithm for solving sudoku
 step 1: pick empty square
 step 2: try all numbers that does not break the constraint
 step 3: find a number that does not break the constraint
@@ -8,7 +9,7 @@ step 4: repeat step 1-3
 step 5: backtrack
 '''
 
-'''
+''' example board
 board = [[7, 8, 0,  4, 0, 0,  1, 2, 3]
          [6, 0, 0,  0, 7, 5,  0, 0, 9]
          [0, 0, 0,  6, 0, 1,  0, 7, 8]
@@ -19,6 +20,42 @@ board = [[7, 8, 0,  4, 0, 0,  1, 2, 3]
          [1, 2, 0,  0, 0, 7,  4, 0, 0]
          [0, 4, 9,  2, 0, 6,  0, 0, 7]]
 '''
+
+''' sudoku website
+www.sudoku.com
+- input the puzzles and run
+- sit back and watch the hardest puzzles get solved in less than a minute
+'''
+
+def input_puzzle():
+    board = []
+
+    for i in range(9):
+        row = []
+
+        # get user input until it's correct or done
+        while True:
+            try:
+                x = input(f'Input row {i + 1}. Missing squares should be 0\n')
+
+                # check for correct length of input
+                if len(x) != 9:
+                    raise Exception
+
+                # check for only input digits
+                else:
+                    int(x)
+
+                    for idx in range(9):
+                        row.append(int(x[idx]))
+                    break
+
+            except Exception:
+                print('Error. Try again. There should be 9 digits')
+
+        board.append(row)
+    return board
+
 
 # function that selects an empty square, denoted by 0
 def pick_empty(board):
@@ -54,8 +91,6 @@ def is_valid(board, guess, row, col):
 
     return True
 
-def generate_num(board):
-    pass
 
 def solver(board):
 
@@ -78,16 +113,33 @@ def solver(board):
     return False
 
 
-if __name__ == '__main__':
-    board = [[7, 8, 0, 4, 0, 0, 1, 2, 0],
-             [6, 0, 0, 0, 7, 5, 0, 0, 9],
-             [0, 0, 0, 6, 0, 1, 0, 7, 8],
-             [0, 0, 7, 0, 4, 0, 2, 6, 0],
-             [0, 0, 1, 0, 5, 0, 9, 3, 0],
-             [9, 0, 4, 0, 6, 0, 0, 0, 5],
-             [0, 7, 0, 3, 0, 0, 0, 1, 2],
-             [1, 2, 0, 0, 0, 7, 4, 0, 0],
-             [0, 4, 9, 2, 0, 6, 0, 0, 7]]
+def autofill(board):
+    # locate first cell
+    pyautogui.click(388, 262)
 
-    print(solver(board))
-    pprint.pprint(board)
+    # for mutation purposes
+    dummy = board
+
+    for row in range(len(dummy)):
+
+        if row % 2 == 1:
+            dummy[row].reverse()
+            for col in range(len(dummy[row])):
+                print(dummy[row][col])
+                pyautogui.press(str(dummy[row][col]))
+                pyautogui.press('left')
+
+        elif row % 2 == 0:
+            for col in range(len(dummy[row])):
+                print(dummy[row][col])
+                pyautogui.press(str(dummy[row][col]))
+                pyautogui.press('right')
+
+        pyautogui.press('down')
+
+
+if __name__ == '__main__':
+    board = input_puzzle()
+    solver(board)
+    autofill(board)
+    # pprint.pprint(board)
